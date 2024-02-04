@@ -8,7 +8,7 @@
 1. 访问 [DashScope控制台](https://dashscope.console.aliyun.com/apiKey)
 2. 点击“创建新的API-KEY”
    ![图片](images/api-1.png "API-KEY")
-3. 点击蓝色的“复制”按钮
+3. 点击蓝色的“复制”按钮  
    ![图片](images/api-2.png "API-KEY")
 4. 将其复制并替换[主程序](article_correction.py)中第19行的 *YOUR-API-KEY* （切记不要删除双引号）
 
@@ -19,12 +19,16 @@
 
 1. 右键单击本文件夹空白处，选择在 终端 打开
    ![图片](images/Terminal-1.png "Terminal")
-2. 在命令行输入下列代码  
+2. 在命令行输入下列代码（纠正拼写）  
    ```console
    venv\Scripts\python.exe article_correction.py --input input.docx
    ```
+   翻译用下列代码：
+   ```console
+   venv\Scripts\python.exe article_correction.py --input input.docx --method translate
+   ```  
    如果有其他名字的文件，可以将input.docx改成对应文件名即可（一定要带后缀名）
-3. 输出的文件将会命名为 “原文件名_after.docx”
+4. 输出的文件将会命名为 “原文件名_after.docx”
 
 # To-do list
 

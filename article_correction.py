@@ -1,12 +1,12 @@
-#############################################
+###################################################
 
 # @Time: Jan 30, 2024
 
 # @Developer: Harryjin
 
-# @Description: 通过DashScope API进行文章校对
+# @Description: 通过DashScope API进行文章校对和翻译
 
-#############################################
+###################################################
 
 import argparse
 from http import HTTPStatus
@@ -29,9 +29,26 @@ API-KEY 添加方法
 需要实名阿里云Aliyun账户并且账户未欠费才可以使用
 """
 
-def call_with_messages(artIn):
+def check_error(artIn):
     messages = [{'role': 'system', 'content': 'You are a professional editor who checks spelling and punctuational mistakes in the article'},
                 {'role': 'user', 'content': '纠正以下英文片段的标点以及拼写错误：' + artIn}]
+
+    response = dashscope.Generation.call(
+        dashscope.Generation.Models.qwen_turbo,
+        messages=messages,
+        result_format='message',
+    )
+    if response.status_code == HTTPStatus.OK:
+        return response
+    else:
+        print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
+            response.request_id, response.status_code,
+            response.code, response.message
+        ))
+
+def translate_article(artIn):
+    messages = [{'role': 'system', 'content': 'You are a professional translator who mainly translates English books to Chinese which are majored in Medication'},
+                {'role': 'user', 'content': '请翻译下列医学专业书籍，将英文翻译为中文，结合上下文，注重自然性：' + artIn}]
 
     response = dashscope.Generation.call(
         dashscope.Generation.Models.qwen_turbo,
@@ -57,8 +74,10 @@ def checkLetters(inStr):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', type=str, default='input.docx', help='Input docx file')
+    parser.add_argument('-m', '--method', type=str, default='check', help='Correction | Translation')
     args = parser.parse_args()
     inputFile = args.input
+    method = args.method
     outputFile = str(inputFile).replace('.docx', '_after.docx')
 
     doc = docx.Document(inputFile)
@@ -67,10 +86,15 @@ if __name__ == '__main__':
     for i in trange(len(doc.paragraphs)):
         artIn = doc.paragraphs[i].text
         if(checkLetters(artIn)):
-            rawOut = call_with_messages(artIn)
+            if(method == 'check'):
+                rawOut = check_error(artIn)
+            else:
+                rawOut = translate_article(artIn)
             temp = json.dumps(rawOut)
             temp = temp.replace('\\\"', '')
             artOut = json.loads(temp)
             newDoc.add_paragraph(artOut['output']['choices'][0]['message']['content'])
+        else:
+            newDoc.add_paragraph(artIn)
     
     newDoc.save(outputFile)

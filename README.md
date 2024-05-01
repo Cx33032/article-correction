@@ -27,7 +27,7 @@
    ```console
    venv\Scripts\python.exe article_correction.py --input input.docx --method translate
    ```  
-   如果有其他名字的文件，可以将input.docx改成对应文件名即可（一定要带后缀名）
+   如果有其他名字的文件，可以将input.docx改成对应文件名（一定要带后缀名）
 4. 输出的文件将会命名为 “原文件名_after.docx”
 
 # To-do list
